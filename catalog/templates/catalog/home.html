@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% load media_url %}
+
+{% block title %}Домашняя страница{% endblock %}
+
+{% block content %}
+
+    <!-- Здесь выводим список товаров -->
+    <div class="container mt-5">
+        <h2>Список товаров</h2>
+        <div class="row">
+            {% for product in products %}
+                <div class="col-3">
+                    <div class="card mb-3">
+                        <img src="{{ product.image|media_url }}" class="card-img-top" alt="{{ product.name }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description|slice:":100" }}</p>
+                            <p class="card-text">Цена: {{ product.price }}</p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}

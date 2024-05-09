@@ -1,0 +1,19 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ object.title }}</h1>
+    {% if object.preview %}  <!-- Проверяем, есть ли у объекта файл preview -->
+        <img src="{{ object.preview.url }}" alt="{{ object.title }}" style="width:100%;">
+    {% else %}
+        <!-- Здесь можно показать заглушку или оставить место пустым -->
+        <div>Изображение отсутствует</div>
+    {% endif %}
+    <p>{{ object.content }}</p>
+    <p><strong>Опубликовано:</strong> {{ object.created_at|date:"d M Y" }}</p>
+    <p><strong>Просмотров:</strong> {{ object.views_count }}</p>
+    <a href="{% url 'catalog:blogpost_update' object.pk %}" class="btn btn-warning">Редактировать</a>
+    <a href="{% url 'catalog:blogpost_delete' object.pk %}" class="btn btn-danger">Удалить</a>
+    <a href="{% url 'catalog:blogpost_list' %}" class="btn btn-secondary">Назад</a>
+{% endblock %}

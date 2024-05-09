@@ -1,0 +1,156 @@
+[
+  {
+    "model": "catalog.category",
+    "pk": 1,
+    "fields": {
+      "name": "Молочные продукты",
+      "description": "Свежие молочные продукты"
+    }
+  },
+  {
+    "model": "catalog.category",
+    "pk": 2,
+    "fields": {
+      "name": "Фрукты",
+      "description": "Свежие фрукты"
+    }
+  },
+  {
+    "model": "catalog.category",
+    "pk": 3,
+    "fields": {
+      "name": "Овощи",
+      "description": "Свежие овощи"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 1,
+    "fields": {
+      "name": "Молоко",
+      "description": "Цельное молоко",
+      "image": "product_images/1646561209_3-kartinkin-net-p-kartinki-moloka-3_EoR95eO.jpg",
+      "category": 1,
+      "price": "3.00",
+      "created_at": "2024-05-09T00:46:00.355Z",
+      "updated_at": "2024-05-09T00:52:36.474Z"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 3,
+    "fields": {
+      "name": "Яблоки",
+      "description": "Красные и зеленые яблоки",
+      "image": "product_images/depositphotos_200633132-stock-photo-ripe-green-red-apples-wooden_HlUsQml.jpg",
+      "category": 2,
+      "price": "2.50",
+      "created_at": "2024-05-09T00:46:35.792Z",
+      "updated_at": "2024-05-09T00:52:48.383Z"
+    }
+  },
+  {
+    "model": "catalog.product",
+    "pk": 4,
+    "fields": {
+      "name": "Морковь",
+      "description": "Сладкая морковь",
+      "image": "product_images/1646776303_2-kartinkin-net-p-morkovka-kartinki-3_AtKylqh.jpg",
+      "category": 3,
+      "price": "1.80",
+      "created_at": "2024-05-09T00:46:58.478Z",
+      "updated_at": "2024-05-09T00:52:57.845Z"
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 1,
+    "fields": {
+      "title": "test",
+      "slug": "test",
+      "content": "Test",
+      "preview": "blog_previews/BBBT5.png",
+      "created_at": "2024-05-09T00:58:45.942Z",
+      "is_published": true,
+      "views_count": 3
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 2,
+    "fields": {
+      "title": "test2",
+      "slug": "test2",
+      "content": "proverka_sluga",
+      "preview": "",
+      "created_at": "2024-05-09T00:59:34.329Z",
+      "is_published": true,
+      "views_count": 2
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 3,
+    "fields": {
+      "title": "тестируем слаг",
+      "slug": "",
+      "content": "проверка слага",
+      "preview": "",
+      "created_at": "2024-05-09T01:00:07.030Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 4,
+    "fields": {
+      "title": "тестируем слаг",
+      "slug": "-1",
+      "content": "проверка слага",
+      "preview": "",
+      "created_at": "2024-05-09T01:06:11.287Z",
+      "is_published": true,
+      "views_count": 1
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 10,
+    "fields": {
+      "title": "slug test",
+      "slug": "slug-test",
+      "content": "проверка слага",
+      "preview": "",
+      "created_at": "2024-05-09T01:09:52.594Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 11,
+    "fields": {
+      "title": "slug-test",
+      "slug": "slug-test-1",
+      "content": "проверка слага",
+      "preview": "",
+      "created_at": "2024-05-09T01:10:00.374Z",
+      "is_published": true,
+      "views_count": 1
+    }
+  },
+  {
+    "model": "catalog.blogpost",
+    "pk": 12,
+    "fields": {
+      "title": "slug",
+      "slug": "slug",
+      "content": "проверка слага",
+      "preview": "",
+      "created_at": "2024-05-09T01:10:06.122Z",
+      "is_published": true,
+      "views_count": 0
+    }
+  }
+]

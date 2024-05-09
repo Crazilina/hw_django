@@ -1,0 +1,30 @@
+{% extends 'catalog/base.html' %}
+
+{% block title %}{{ object.title|default:"Создание новой записи" }}{% endblock %}
+
+{% block content %}
+    <h2>{% if object %}Редактировать запись: {{ object.title }}{% else %}Создание новой записи{% endif %}</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="id_title" class="form-label">Заголовок</label>
+            <input type="text" class="form-control" id="id_title" name="title" value="{{ form.title.value|default_if_none:'' }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="id_content" class="form-label">Содержимое</label>
+            <textarea class="form-control" id="id_content" name="content" required>{{ form.content.value|default_if_none:'' }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="id_preview" class="form-label">Превью (изображение)</label>
+            <input type="file" class="form-control" id="id_preview" name="preview">
+            {% if object.preview %}
+                <img src="{{ object.preview.url }}" alt="Current Preview" style="max-width: 200px; max-height: 200px;">
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            <label for="id_is_published" class="form-label">Опубликовано</label>
+            <input type="checkbox" class="form-check-input" id="id_is_published" name="is_published" {% if object.is_published %} checked="checked"{% endif %}>
+        </div>
+        <button type="submit" class="btn btn-success">Сохранить</button>
+    </form>
+{% endblock %}
