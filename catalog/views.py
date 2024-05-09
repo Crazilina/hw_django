@@ -4,14 +4,31 @@ from django.views.generic import ListView, DetailView, View, CreateView, UpdateV
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
-from .models import Product, BlogPost
-from catalog.forms import ProductForm
+from .models import Product, BlogPost, Version
+from catalog.forms import ProductForm, VersionFormSet
 
 
 class HomeListView(ListView):
     model = Product
     template_name = 'catalog/home.html'
     context_object_name = 'products'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        products = context['products']
+
+        # Добавляем информацию о текущей активной версии для каждого продукта
+        for product in products:
+            # Пытаемся найти текущую активную версию продукта
+            try:
+                current_version = Version.objects.filter(product=product, is_current=True).first()
+            except Version.DoesNotExist:
+                current_version = None
+
+            # Присваиваем найденную версию продукту как атрибут
+            product.current_version = current_version
+
+        return context
 
 
 class ContactsView(View):
@@ -42,15 +59,23 @@ class ProductDetailView(DetailView):
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
+    template_name = 'catalog/product_form.html'
     success_url = reverse_lazy('catalog:home')
 
+    def get_context_data(self, **kwargs):
+        data = super().get_context_data(**kwargs)
+        if self.request.method == 'POST':
+            data['versions'] = VersionFormSet(self.request.POST, instance=self.object)
+        else:
+            data['versions'] = VersionFormSet(instance=self.object)
+        return data
+
     def form_valid(self, form):
-        formset = self.get_context_data()['formset']
+        formset = self.get_context_data()['versions']
         self.object = form.save()
         if formset.is_valid():
             formset.instance = self.object
             formset.save()
-
         return super().form_valid(form)
 
 

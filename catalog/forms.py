@@ -1,6 +1,7 @@
 from django import forms
+from django.forms import inlineformset_factory
 
-from catalog.models import Product
+from catalog.models import Product, Version
 
 
 class StyleFormMixin:
@@ -30,3 +31,18 @@ class ProductForm(StyleFormMixin, forms.ModelForm):
         if any(word in cleaned_data.lower() for word in forbidden_words):
             raise forms.ValidationError('В описании продукта использованы запрещенные слова.')
         return cleaned_data
+
+
+class VersionForm(forms.ModelForm):
+    class Meta:
+        model = Version
+        fields = ['version_number', 'version_title', 'is_current']
+
+
+VersionFormSet = inlineformset_factory(
+    Product,
+    Version,
+    form=VersionForm,
+    extra=1,  # количество форм для создания новых версий
+    can_delete=True  # разрешаем удаление версий
+)

@@ -18,9 +18,14 @@
                     <div class="card mb-3">
                         <img src="{{ product.image|media_url }}" class="card-img-top" alt="{{ product.name }}">
                         <div class="card-body">
-                            <h5 class="card-title">{{ product.name }}</h5>
-                            <p class="card-text">{{ product.description|slice:":100" }}</p>
+                            <h3 class="card-title">{{ product.name }}</h3>
+                            <p class="card-text">{{ product.description|slice:":30" }}</p>
                             <p class="card-text">Цена: {{ product.price }}</p>
+                            {% if product.current_version %}
+                            <p>Текущая версия: {{ product.current_version.version_title }} ({{ product.current_version.version_number }})</p>
+                            {% else %}
+                            <p>Нет активной версии</p>
+                            {% endif %}
                         </div>
                     </div>
                 </div>

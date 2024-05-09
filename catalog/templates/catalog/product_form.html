@@ -13,6 +13,10 @@
                     <div class="card-body">
                         {% csrf_token %}
                         {{ form.as_p }}
+                        {{ versions.management_form }}
+                        {% for form in versions.forms %}
+                            {{ form.as_p }}
+                        {% endfor %}
                         <button type="submit" class="btn btn-success">Сохранить</button>
                     </div>
                     <div class="card-footer"></div>
