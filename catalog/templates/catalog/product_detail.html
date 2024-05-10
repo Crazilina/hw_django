@@ -4,11 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ product.name }}</title>
+    <style>
+        .col-6 {
+            max-width: 540px; /* Максимальная ширина карточки */
+            margin: auto; /* Центрирование карточки на странице */
+        }
+
+        .card-img-top {
+            max-width: 50%; /* Максимальная ширина изображения соответствует ширине карточки */
+            height: auto; /* Высота изображения изменяется автоматически для сохранения пропорций */
+        }
+
+        @media (max-width: 768px) {
+            .col-6 {
+                max-width: 100%; /* На маленьких экранах карточка занимает 100% ширины */
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>{{ product.name }}</h1>
-    <p>Описание: {{ product.description }}</p>
-    <p>Цена: {{ product.price }}</p>
-    <!-- Позже можно будет сюда добавить любые другие поля товара для отображения -->
+    <div class="col-6">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">{{ product.name }}</h3>
+            </div>
+            <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+            <div class="card-body">
+                <p class="card-text">{{ product.description }}</p>
+                <p class="card-text">Цена: {{ product.price }}</p>
+                <h4>Версии:</h4>
+                <ul>
+                {% for version in versions %}
+                    <li>{{ version.version_title }} (Номер версии: {{ version.version_number }}) -
+                        {% if version.is_current %}Текущая{% else %}Старая{% endif %}
+                    </li>
+                {% endfor %}
+                </ul>
+                <a href="{% url 'catalog:home' %}" class="btn btn-sm btn-outline-secondary">Назад</a>
+            </div>
+            <div class="card-footer"></div>
+        </div>
+    </div>
 </body>
 </html>

@@ -1,3 +1,4 @@
+from django.forms import inlineformset_factory
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, View, CreateView, UpdateView, DeleteView
@@ -5,7 +6,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
 from .models import Product, BlogPost, Version
-from catalog.forms import ProductForm, VersionFormSet
+from catalog.forms import ProductForm, VersionForm
 
 
 class HomeListView(ListView):
@@ -50,12 +51,6 @@ class ContactsView(View):
         return HttpResponse("Спасибо за обратную связь!")
 
 
-class ProductDetailView(DetailView):
-    model = Product
-    template_name = 'catalog/product_detail.html'
-    context_object_name = 'product'
-
-
 class ProductCreateView(CreateView):
     model = Product
     form_class = ProductForm
@@ -64,10 +59,11 @@ class ProductCreateView(CreateView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
+        VersionFormset = inlineformset_factory(Product, Version, form=VersionForm, extra=1, can_delete=True)
         if self.request.method == 'POST':
-            data['versions'] = VersionFormSet(self.request.POST, instance=self.object)
+            data['versions'] = VersionFormset(self.request.POST, instance=self.object)
         else:
-            data['versions'] = VersionFormSet(instance=self.object)
+            data['versions'] = VersionFormset(instance=self.object)
         return data
 
     def form_valid(self, form):
@@ -77,6 +73,18 @@ class ProductCreateView(CreateView):
             formset.instance = self.object
             formset.save()
         return super().form_valid(form)
+
+
+class ProductDetailView(DetailView):
+    model = Product
+    template_name = 'catalog/product_detail.html'
+    context_object_name = 'product'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        product = self.get_object()
+        context['versions'] = product.versions.all()
+        return context
 
 
 class BlogPostListView(ListView):

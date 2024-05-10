@@ -13,11 +13,26 @@
                     <div class="card-body">
                         {% csrf_token %}
                         {{ form.as_p }}
+                        <button type="submit" class="btn btn-success">Сохранить</button>
+                    </div>
+                    <div class="card-footer"></div>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            Версии продукта
+                        </h3>
+                    </div>
+                    <div class="card-body">
                         {{ versions.management_form }}
                         {% for form in versions.forms %}
                             {{ form.as_p }}
+                            {% if not forloop.last %}
+                                <hr>
+                            {% endif %}
                         {% endfor %}
-                        <button type="submit" class="btn btn-success">Сохранить</button>
                     </div>
                     <div class="card-footer"></div>
                 </div>

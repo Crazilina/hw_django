@@ -24,8 +24,17 @@
                             {% if product.current_version %}
                             <p>Текущая версия: {{ product.current_version.version_title }} ({{ product.current_version.version_number }})</p>
                             {% else %}
-                            <p>Нет активной версии</p>
+                                <span class="text-muted">{{ object | title }}</span>
                             {% endif %}
+                        </div>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                                <a href="{% url 'catalog:product_detail' product.pk %}" type="button"
+                                   class="btn btn-sm btn-outline-secondary">View</a>
+                                <a href="#"
+                                   class="btn btn-sm btn-outline-danger">Delete</a>
+                            </div>
                         </div>
                     </div>
                 </div>
