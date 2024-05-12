@@ -1,44 +1,44 @@
-{% extends 'base.html' %}
+{% extends 'catalog/base.html' %}
 
-{% load media_url %}
+{% load static %}
 
 {% block title %}Домашняя страница{% endblock %}
 
 {% block content %}
-
-    <!-- Здесь выводим список товаров -->
-    <div class="container mt-5">
-        <h2>Список товаров</h2>
-        <div class="col-12 mb-5">
-            <a class='btn btn-outline-primary' href="{% url 'catalog:create_product' %}">Добавить новый продукт</a>
-        </div>
-        <div class="row">
-            {% for product in products %}
-                <div class="col-3">
-                    <div class="card mb-3">
-                        <img src="{{ product.image|media_url }}" class="card-img-top" alt="{{ product.name }}">
-                        <div class="card-body">
-                            <h3 class="card-title">{{ product.name }}</h3>
-                            <p class="card-text">{{ product.description|slice:":30" }}</p>
-                            <p class="card-text">Цена: {{ product.price }}</p>
-                            {% if product.current_version %}
-                            <p>Текущая версия: {{ product.current_version.version_title }} ({{ product.current_version.version_number }})</p>
-                            {% else %}
-                                <span class="text-muted">{{ object | title }}</span>
-                            {% endif %}
-                        </div>
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                                <a href="{% url 'catalog:product_detail' product.pk %}" type="button"
-                                   class="btn btn-sm btn-outline-secondary">View</a>
-                                <a href="#"
-                                   class="btn btn-sm btn-outline-danger">Delete</a>
-                            </div>
+<div class="container mt-5">
+    <h2>Список товаров</h2>
+    <div class="col-12 mb-5">
+        <a class='btn btn-outline-primary' href="{% url 'catalog:create_product' %}">Добавить новый продукт</a>
+    </div>
+    <div class="row">
+        {% for product in products %}
+        <div class="col-md-4">
+            <div class="card mb-4 shadow-sm">
+                 {% if product.image %}
+                    <img src="{{ product.image.url }}" class="bd-placeholder-img card-img-top" width="100%" height="225" aria-label="Placeholder: Thumbnail">
+                {% else %}
+                    <img src="{% static 'images/default-image.jpg' %}" class="bd-placeholder-img card-img-top" width="100%" height="225" aria-label="Placeholder: Thumbnail">
+                {% endif %}
+                <div class="card-body">
+                    <p class="card-text">{{ product.name }}</p>
+                    <p class="card-text">{{ product.description|slice:":30" }}...</p>
+                    <p class="card-text">Цена: {{ product.price }}</p>
+                    {% if product.current_version %}
+                    <p class="card-text">Текущая версия: {{ product.current_version.version_title }} ({{ product.current_version.version_number }})</p>
+                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                            <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-sm btn-outline-secondary">Просмотр</a>
+                            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
                         </div>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
         </div>
+        {% empty %}
+        <p>Продукты отсутствуют.</p>
+        {% endfor %}
     </div>
+</div>
 {% endblock %}

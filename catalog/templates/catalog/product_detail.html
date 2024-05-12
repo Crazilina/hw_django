@@ -1,5 +1,9 @@
-<!DOCTYPE html>
-<html lang="en">
+{% extends 'catalog/base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }}{% endblock %}
+
+{% block content %}
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,28 +26,31 @@
         }
     </style>
 </head>
-<body>
-    <div class="col-6">
-        <div class="card">
-            <div class="card-header">
-                <h3 class="card-title">{{ product.name }}</h3>
-            </div>
+<div class="col-12">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">{{ product.name }}</h3>
+        </div>
+        {% if product.image %}
             <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
-            <div class="card-body">
-                <p class="card-text">{{ product.description }}</p>
-                <p class="card-text">Цена: {{ product.price }}</p>
-                <h4>Версии:</h4>
-                <ul>
-                {% for version in versions %}
-                    <li>{{ version.version_title }} (Номер версии: {{ version.version_number }}) -
-                        {% if version.is_current %}Текущая{% else %}Старая{% endif %}
-                    </li>
-                {% endfor %}
-                </ul>
-                <a href="{% url 'catalog:home' %}" class="btn btn-sm btn-outline-secondary">Назад</a>
-            </div>
-            <div class="card-footer"></div>
+        {% else %}
+            <img src="{% static 'images/default-image.jpg' %}" class="card-img-top" alt="No image available">
+        {% endif %}
+        <div class="card-body">
+            <p class="card-text">{{ product.description }}</p>
+            <p class="card-text">Цена: {{ product.price }}</p>
+            <h4>Версии:</h4>
+            <ul>
+            {% for version in versions %}
+                <li>{{ version.version_title }} (Номер версии: {{ version.version_number }}) -
+                    {% if version.is_current %}Текущая{% else %}Старая{% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'catalog:home' %}" class="btn btn-sm btn-outline-secondary">Назад</a>
         </div>
     </div>
-</body>
-</html>
+</div>
+{% endblock %}

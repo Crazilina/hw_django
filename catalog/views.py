@@ -87,8 +87,44 @@ class ProductDetailView(DetailView):
         return context
 
 
+class ProductUpdateView(UpdateView):
+    model = Product
+    form_class = ProductForm
+    template_name = 'catalog/product_form.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def get_context_data(self, **kwargs):
+        data = super(ProductUpdateView, self).get_context_data(**kwargs)
+        if self.request.POST:
+            data['versions'] = inlineformset_factory(Product, Version, form=VersionForm, extra=1)(self.request.POST,
+                                                                                                  self.request.FILES,
+                                                                                                  instance=self.object)
+        else:
+            data['versions'] = inlineformset_factory(Product, Version, form=VersionForm, extra=1)(instance=self.object)
+        return data
+
+    def form_valid(self, form):
+        context = self.get_context_data()
+        versions = context['versions']
+        if versions.is_valid():
+            versions.save()
+        return super(ProductUpdateView, self).form_valid(form)
+
+
+class ProductDeleteView(DeleteView):
+    model = Product
+    template_name = 'catalog/product_confirm_delete.html'
+    success_url = reverse_lazy('catalog:home')
+
+    def delete(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.object.delete()
+        return HttpResponse("Продукт успешно удален")
+
+
 class BlogPostListView(ListView):
     model = BlogPost
+
     # По умолчанию использует 'blogpost_list.html'
 
     def get_queryset(self):
