@@ -107,6 +107,11 @@ class ProductUpdateView(UpdateView):
         context = self.get_context_data()
         versions = context['versions']
         if versions.is_valid():
+            active_versions = [version for version in versions if version.cleaned_data.get('is_current')]
+            if len(active_versions) > 1:
+                form.add_error(None,
+                               'Может быть только одна активная версия продукта. Пожалуйста, выберите только одну.')
+                return self.form_invalid(form)
             versions.save()
         return super(ProductUpdateView, self).form_valid(form)
 
