@@ -5,6 +5,7 @@ from django.views.generic import ListView, DetailView, View, CreateView, UpdateV
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import ensure_csrf_cookie
+from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Product, BlogPost, Version
 from catalog.forms import ProductForm, VersionForm
 
@@ -51,7 +52,7 @@ class ContactsView(View):
         return HttpResponse("Спасибо за обратную связь!")
 
 
-class ProductCreateView(CreateView):
+class ProductCreateView(LoginRequiredMixin, CreateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -67,6 +68,7 @@ class ProductCreateView(CreateView):
         return data
 
     def form_valid(self, form):
+        form.instance.owner = self.request.user  # Привязываем продукт к авторизованному пользователю
         formset = self.get_context_data()['versions']
         self.object = form.save()
         if formset.is_valid():
@@ -116,7 +118,7 @@ class ProductUpdateView(UpdateView):
         return super(ProductUpdateView, self).form_valid(form)
 
 
-class ProductDeleteView(DeleteView):
+class ProductDeleteView(LoginRequiredMixin, DeleteView):  # Добавляем LoginRequiredMixin
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
@@ -127,7 +129,7 @@ class ProductDeleteView(DeleteView):
         return HttpResponse("Продукт успешно удален")
 
 
-class BlogPostListView(ListView):
+class BlogPostListView(LoginRequiredMixin, ListView):
     model = BlogPost
 
     # По умолчанию использует 'blogpost_list.html'
@@ -137,7 +139,7 @@ class BlogPostListView(ListView):
         return BlogPost.objects.filter(is_published=True)
 
 
-class BlogPostDetailView(DetailView):
+class BlogPostDetailView(LoginRequiredMixin, DetailView):
     model = BlogPost
     slug_field = 'slug'
     slug_url_kwarg = 'slug'
@@ -150,7 +152,7 @@ class BlogPostDetailView(DetailView):
         return obj
 
 
-class BlogPostCreateView(CreateView):
+class BlogPostCreateView(LoginRequiredMixin, CreateView):
     model = BlogPost
     fields = ['title', 'content', 'preview', 'is_published']
     success_url = reverse_lazy('catalog:blogpost_list')
@@ -172,7 +174,7 @@ class BlogPostCreateView(CreateView):
         return super().form_valid(form)
 
 
-class BlogPostUpdateView(UpdateView):
+class BlogPostUpdateView(LoginRequiredMixin, UpdateView):
     model = BlogPost
     fields = ['title', 'content', 'preview', 'is_published']
 
@@ -181,7 +183,7 @@ class BlogPostUpdateView(UpdateView):
         return reverse('catalog:blogpost_detail', args=[self.object.slug])
 
 
-class BlogPostDeleteView(DeleteView):
+class BlogPostDeleteView(LoginRequiredMixin, DeleteView):
     model = BlogPost
     success_url = reverse_lazy('catalog:blogpost_list')
     # По умолчанию использует 'blogpost_confirm_delete.html'
