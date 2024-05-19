@@ -1,13 +1,15 @@
+from django.contrib.auth.decorators import permission_required
+from django.core.exceptions import PermissionDenied
 from django.forms import inlineformset_factory
 from django.urls import reverse_lazy, reverse
 from django.utils.text import slugify
 from django.views.generic import ListView, DetailView, View, CreateView, UpdateView, DeleteView
-from django.http import HttpResponse
-from django.shortcuts import render
+from django.http import HttpResponse, HttpResponseForbidden
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Product, BlogPost, Version
-from catalog.forms import ProductForm, VersionForm
+from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 
 
 class HomeListView(ListView):
@@ -89,7 +91,7 @@ class ProductDetailView(DetailView):
         return context
 
 
-class ProductUpdateView(UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -117,8 +119,18 @@ class ProductUpdateView(UpdateView):
             versions.save()
         return super(ProductUpdateView, self).form_valid(form)
 
+    def get_form_class(self):
+        user = self.request.user
+        if user == self.get_object().owner:
+            return ProductForm
+        if user.has_perm('catalog.can_change_product_description') \
+                and user.has_perm('catalog.can_change_product_category') \
+                and user.has_perm('catalog.can_cancel_publish_product'):
+            return ProductModeratorForm
+        raise PermissionDenied
 
-class ProductDeleteView(LoginRequiredMixin, DeleteView):  # Добавляем LoginRequiredMixin
+
+class ProductDeleteView(LoginRequiredMixin, DeleteView):
     model = Product
     template_name = 'catalog/product_confirm_delete.html'
     success_url = reverse_lazy('catalog:home')
@@ -127,6 +139,16 @@ class ProductDeleteView(LoginRequiredMixin, DeleteView):  # Добавляем L
         self.object = self.get_object()
         self.object.delete()
         return HttpResponse("Продукт успешно удален")
+
+
+@permission_required('catalog.can_cancel_publish_product', raise_exception=True)
+def cancel_publish(request, pk):
+    product = get_object_or_404(Product, pk=pk)
+    if not request.user.has_perm('catalog.can_cancel_publish_product'):
+        return HttpResponseForbidden()
+    product.publish_status = 'not_published'
+    product.save()
+    return redirect(reverse('catalog:product_detail', args=[pk]))
 
 
 class BlogPostListView(LoginRequiredMixin, ListView):

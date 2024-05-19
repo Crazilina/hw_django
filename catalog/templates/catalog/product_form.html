@@ -30,6 +30,12 @@
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-success">Сохранить изменения</button>
+                    {% if perms.catalog.can_cancel_publish_product %}
+                        <form method="post" action="{% url 'catalog:cancel_publish' product.pk %}" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger">Отменить публикацию</button>
+                        </form>
+                    {% endif %}
                 </div>
             </div>
         </div>

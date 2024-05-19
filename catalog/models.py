@@ -18,13 +18,19 @@ class Category(models.Model):
 
 class Product(models.Model):
     objects = None
+    PUBLISH_STATUS_CHOICES = [
+        ('not_published', 'Не опубликовано'),
+        ('published', 'Опубликовано')
+    ]
     name = models.CharField(max_length=200, verbose_name='Наименование')
-    description = models.TextField(verbose_name='Описание')
+    description = models.TextField(verbose_name='Описание', help_text='Введите описание продукта')
     image = models.ImageField(upload_to='product_images/', verbose_name='Изображение', **NULLABLE)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name='Категория')
     price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='Цена за покупку')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата последнего изменения')
+    publish_status = models.CharField(max_length=15, choices=PUBLISH_STATUS_CHOICES, default='not_published',
+                                      verbose_name='Статус публикации')
     # Поле владельца
     owner = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Владелец',
                               related_name='products',  **NULLABLE)
@@ -32,6 +38,11 @@ class Product(models.Model):
     class Meta:
         verbose_name = 'Продукт'
         verbose_name_plural = 'Продукты'
+        permissions =[
+            ("can_cancel_publish_product", "Может отменять публикацию продукта"),
+            ("can_change_product_description", "Может менять описание продукта"),
+            ("can_change_product_category", "Может менять категорию продукта"),
+        ]
 
     def __str__(self):
         return self.name

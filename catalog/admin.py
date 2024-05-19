@@ -20,9 +20,8 @@ class BlogPostAdmin(admin.ModelAdmin):
     list_display = ('title', 'slug', 'content', 'preview', 'created_at', 'is_published', 'views_count',)
     search_fields = ('title', 'content',)
 
+
 @admin.register(Version)
 class VersionAdmin(admin.ModelAdmin):
     list_display = ('product', 'version_number', 'version_title', 'is_current',)
     list_filter = ('is_current',)
-
-
