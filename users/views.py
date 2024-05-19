@@ -52,14 +52,19 @@ class PasswordResetRequestView(FormView):
 
     def form_valid(self, form):
         email = form.cleaned_data['email']
-        user = get_object_or_404(User, email=email)
-        new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
-        user.password = make_password(new_password)
-        user.save()
-        send_mail(
-            subject='Восстановление пароля',
-            message=f'Ваш новый пароль: {new_password}',
-            from_email=EMAIL_HOST_USER,
-            recipient_list=[user.email]
-        )
-        return super().form_valid(form)
+        user = User.objects.filter(email=email).first()
+        if user:
+            new_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            user.password = make_password(new_password)
+            user.save()
+            send_mail(
+                subject='Восстановление пароля',
+                message=f'Ваш новый пароль: {new_password}',
+                from_email=EMAIL_HOST_USER,
+                recipient_list=[user.email]
+            )
+            return super().form_valid(form)
+        else:
+            # Если пользователь не найден, добавляем ошибку в форму
+            form.add_error('email', 'Пользователь с таким email не найден.')
+            return self.form_invalid(form)
