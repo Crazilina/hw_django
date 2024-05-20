@@ -7,7 +7,7 @@ from django.views.generic import ListView, DetailView, View, CreateView, UpdateV
 from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Product, BlogPost, Version
 from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
 
@@ -31,6 +31,9 @@ class HomeListView(ListView):
 
             # Присваиваем найденную версию продукту как атрибут
             product.current_version = current_version
+
+        # Добавляем текущего пользователя в контекст
+        context['user'] = self.request.user
 
         return context
 
@@ -91,7 +94,7 @@ class ProductDetailView(DetailView):
         return context
 
 
-class ProductUpdateView(LoginRequiredMixin, UpdateView):
+class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Product
     form_class = ProductForm
     template_name = 'catalog/product_form.html'
@@ -99,6 +102,7 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
 
     def get_context_data(self, **kwargs):
         data = super(ProductUpdateView, self).get_context_data(**kwargs)
+        data['product'] = self.get_object()
         if self.request.POST:
             data['versions'] = inlineformset_factory(Product, Version, form=VersionForm, extra=1)(self.request.POST,
                                                                                                   self.request.FILES,
@@ -128,6 +132,15 @@ class ProductUpdateView(LoginRequiredMixin, UpdateView):
                 and user.has_perm('catalog.can_cancel_publish_product'):
             return ProductModeratorForm
         raise PermissionDenied
+
+    def test_func(self):
+        product = self.get_object()
+        user = self.request.user
+        return user == product.owner or (
+            user.has_perm('catalog.can_change_product_description') and
+            user.has_perm('catalog.can_change_product_category') and
+            user.has_perm('catalog.can_cancel_publish_product')
+        )
 
 
 class ProductDeleteView(LoginRequiredMixin, DeleteView):

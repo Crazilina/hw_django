@@ -17,7 +17,6 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    objects = None
     PUBLISH_STATUS_CHOICES = [
         ('not_published', 'Не опубликовано'),
         ('published', 'Опубликовано')

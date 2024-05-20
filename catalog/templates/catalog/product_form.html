@@ -7,7 +7,7 @@
         <div class="col-6">
             <div class="card">
                 <div class="card-header">
-                    <h3 class="card-title">Редактировать продукт</h3>
+                    <h3 class="card-title">{% if product.pk %}Редактировать{% else %}Добавить{% endif %} продукт</h3>
                 </div>
                 <div class="card-body">
                     {{ form.as_p }}
@@ -29,17 +29,17 @@
                     {% endfor %}
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-success">Сохранить изменения</button>
-                    {% if perms.catalog.can_cancel_publish_product %}
+                    <button type="submit" class="btn btn-success">{% if product.pk %}Сохранить изменения{% else %}Добавить продукт{% endif %}</button>
+                    {% if product.pk and perms.catalog.can_cancel_publish_product %}
                         <form method="post" action="{% url 'catalog:cancel_publish' product.pk %}" style="display:inline;">
                             {% csrf_token %}
                             <button type="submit" class="btn btn-danger">Отменить публикацию</button>
                         </form>
                     {% endif %}
+                    <a href="{% url 'catalog:home' %}" class="btn btn-secondary">Назад</a>
                 </div>
             </div>
         </div>
     </form>
 </div>
 {% endblock %}
-

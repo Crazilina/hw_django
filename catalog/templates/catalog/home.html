@@ -30,12 +30,10 @@
                     {% endif %}
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="btn-group">
-                            {% if user.is_authenticated %}
-                            <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
-                            <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
                             <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-sm btn-outline-secondary">Просмотр</a>
-                            {% else %}
-                            <a href="{% url 'catalog:product_detail' product.pk %}" class="btn btn-sm btn-outline-secondary">Просмотр</a>
+                            {% if user == product.owner or perms.catalog.can_change_product_description and perms.catalog.can_change_product_category and perms.catalog.can_cancel_publish_product %}
+                                <a href="{% url 'catalog:product_update' product.pk %}" class="btn btn-sm btn-outline-secondary">Редактировать</a>
+                                <a href="{% url 'catalog:product_delete' product.pk %}" class="btn btn-sm btn-outline-danger">Удалить</a>
                             {% endif %}
                         </div>
                     </div>
