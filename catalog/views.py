@@ -8,8 +8,9 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Product, BlogPost, Version
+from .models import Product, BlogPost, Version, Category
 from catalog.forms import ProductForm, VersionForm, ProductModeratorForm
+from .services import get_cached_categories
 
 
 class HomeListView(ListView):
@@ -35,6 +36,33 @@ class HomeListView(ListView):
         # Добавляем текущего пользователя в контекст
         context['user'] = self.request.user
 
+        # Добавляем категории в контекст
+        context['categories'] = get_cached_categories()
+
+        return context
+
+
+class CategoryListView(ListView):
+    model = Category
+    template_name = 'catalog/category_list.html'
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return get_cached_categories()
+
+
+class ProductListByCategoryView(ListView):
+    model = Product
+    template_name = 'catalog/product_list_by_category.html'
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        category_id = self.kwargs['pk']
+        return Product.objects.filter(category_id=category_id)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['category'] = get_object_or_404(Category, pk=self.kwargs['pk'])
         return context
 
 
@@ -137,9 +165,9 @@ class ProductUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
         product = self.get_object()
         user = self.request.user
         return user == product.owner or (
-            user.has_perm('catalog.can_change_product_description') and
-            user.has_perm('catalog.can_change_product_category') and
-            user.has_perm('catalog.can_cancel_publish_product')
+                user.has_perm('catalog.can_change_product_description') and
+                user.has_perm('catalog.can_change_product_category') and
+                user.has_perm('catalog.can_cancel_publish_product')
         )
 
 
