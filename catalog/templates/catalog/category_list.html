@@ -4,6 +4,9 @@
 
 {% block content %}
 <div class="container mt-5">
+    <div class="col-12">
+        <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">На главную</a>
+    </div>
     <h2>Список категорий</h2>
     <div class="row">
         {% for category in categories %}

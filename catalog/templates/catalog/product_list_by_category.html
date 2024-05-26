@@ -9,7 +9,8 @@
     <h2>Продукты в категории {{ category.name }}</h2>
     <div class="row mb-3">
         <div class="col-12">
-            <a href="{% url 'catalog:category_list' %}" class="btn btn-outline-secondary">Назад</a>
+            <a href="{% url 'catalog:category_list' %}" class="btn btn-outline-secondary">К списку категорий</a>
+            <a href="{% url 'catalog:home' %}" class="btn btn-outline-secondary">На главную</a>
         </div>
     </div>
     <div class="row">
